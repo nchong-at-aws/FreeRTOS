@@ -23,15 +23,15 @@
 #include "proof/list.h"
 
 void vListInitialise( List_t * const pxList )
-    //@ requires list_uninitialised(pxList); 
-    //@ ensures list(pxList, 0, ?end, end, cons(end,nil));
+    //@ requires List_t_uninitialised(pxList); 
+    //@ ensures List_t(pxList, 0, ?end, end, cons(end,nil));
 {
-    //@ open list_uninitialised(pxList);
+    //@ open List_t_uninitialised(pxList);
     
     pxList->pxIndex = ( ListItem_t * ) &( pxList->xListEnd ); /*lint !e826 !e740 !e9087 The mini list structure is used as the list end to save RAM.  This is checked and valid. */
 
-    //@ assert list_item(?end, _, _, _, _);
-    //@ open list_item(end, _, _, _, _);
+    //@ assert ListItem_t(?end, _, _, _, _);
+    //@ open ListItem_t(end, _, _, _, _);
     
     pxList->xListEnd.xItemValue = portMAX_DELAY;
 
@@ -47,8 +47,8 @@ void vListInitialise( List_t * const pxList )
     listSET_LIST_INTEGRITY_CHECK_1_VALUE( pxList );
     listSET_LIST_INTEGRITY_CHECK_2_VALUE( pxList );
     
-    //@ close list_item(end, portMAX_DELAY, end, end, _);
+    //@ close ListItem_t(end, portMAX_DELAY, end, end, _);
     //@ close DLS(end, end, end, end, cons(end,nil));
-    //@ close list(pxList, 0, end, end, cons(end,nil));
+    //@ close List_t(pxList, 0, end, end, cons(end,nil));
 }
 /*-----------------------------------------------------------*/

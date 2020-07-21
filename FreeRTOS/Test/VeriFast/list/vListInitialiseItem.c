@@ -23,17 +23,17 @@
 #include "proof/list.h"
 
 void vListInitialiseItem( ListItem_t * const pxItem )
-    //@ requires list_item(pxItem, ?value, ?next, ?prev, _);
-    //@ ensures list_item(pxItem, value, next, prev, NULL);
+    //@ requires ListItem_t(pxItem, ?value, ?next, ?prev, _);
+    //@ ensures ListItem_t(pxItem, value, next, prev, NULL);
 {
 
-    //@ open list_item(pxItem, value, next, prev, _);
+    //@ open ListItem_t(pxItem, value, next, prev, _);
     
     pxItem->pxContainer = NULL;
 
     listSET_FIRST_LIST_ITEM_INTEGRITY_CHECK_VALUE( pxItem );
     listSET_SECOND_LIST_ITEM_INTEGRITY_CHECK_VALUE( pxItem );
     
-    //@ close list_item(pxItem, value, next, prev, NULL);
+    //@ close ListItem_t(pxItem, value, next, prev, NULL);
 }
 /*-----------------------------------------------------------*/
