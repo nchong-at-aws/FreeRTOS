@@ -23,81 +23,72 @@
 #include "proof/list.h"
 
 UBaseType_t uxListRemove( ListItem_t * const pxItemToRemove )
-	//@ requires exists<struct xLIST *>(?container) &*& List_t(container, ?len, ?idx, ?end, ?cells) &*& (mem(pxItemToRemove, cells) == true) &*& (pxItemToRemove != end);
-	//@ ensures List_t(container, len-1, _, end, remove(pxItemToRemove, cells)) &*& ListItem_t(pxItemToRemove, _, _, _, NULL);
+    //@ requires exists<struct xLIST *>(?container) &*& List_t(container, ?len, ?idx, ?end, ?cells) &*& (mem(pxItemToRemove, cells) == true) &*& (pxItemToRemove != end);
+    //@ ensures List_t(container, len-1, _, end, remove(pxItemToRemove, cells)) &*& ListItem_t(pxItemToRemove, _, _, _, NULL);
 {
-	//@ open List_t(container, len, idx, end, cells);
-	
-	//@ assert DLS(end, ?endprev, end, endprev, cells);
-	//@ split_dls(end, endprev, end, endprev, pxItemToRemove, cells);
+    //@ open List_t(container, len, idx, end, cells);
+    //@ assert DLS(end, ?endprev, end, endprev, cells, _);
+    //@ split_DLS(end, endprev, end, endprev, pxItemToRemove, cells);
+    //@ assert DLS(end, endprev, pxItemToRemove, ?itemprev, ?cells_of_DLS1, _);
+    //@ assert DLS(pxItemToRemove, itemprev, end, endprev, ?cells_of_DLS2, _);
+    //@ DLS_length_positive(pxItemToRemove, endprev);
+    //@ join_cells(cells, cells_of_DLS1, cells_of_DLS2, pxItemToRemove);
+    //@ length_append(cells_of_DLS1, cells_of_DLS2);
 
-	//@ assert DLS(end, endprev, pxItemToRemove, ?itemprev, ?cells_of_DLS1);	// DLS1
+    /*@
+    
+    if (itemprev == end)
+    {
+        if (pxItemToRemove == endprev)
+        {
+    
+            open DLS(pxItemToRemove, end, end, pxItemToRemove, cells_of_DLS2, _);
+            open ListItem_t(pxItemToRemove, _, end, end, _);
+            open DLS(end, pxItemToRemove, pxItemToRemove, end, cells_of_DLS1, _);
+            open ListItem_t(end, _, pxItemToRemove, pxItemToRemove, _);
+                
+        } else
+        {
+        
+            open DLS(pxItemToRemove, end, end, endprev, cells_of_DLS2, _);
+            open ListItem_t(pxItemToRemove, _, ?itemnext, end, _);
+            open DLS(itemnext, pxItemToRemove, end, endprev, tail(cells_of_DLS2), _);
+            open ListItem_t(itemnext, _, _, pxItemToRemove, _); 
+            open DLS(end, endprev, pxItemToRemove, end, cells_of_DLS1, _);
+            open ListItem_t(end, _, pxItemToRemove, endprev, _);
+        } 
 
-	//@ assert DLS(pxItemToRemove, itemprev, end, endprev, ?cells_of_DLS2);	// DLS2
-	//@ dls_length(pxItemToRemove, itemprev, end, endprev, cells_of_DLS2);
-	
-	//@ join_cells(cells, cells_of_DLS1, cells_of_DLS2, pxItemToRemove);	// Lemma is proved
-	
-	//@ length_append(cells_of_DLS1, cells_of_DLS2);
-	
-	//@ bool Case_A = (itemprev == end) && (pxItemToRemove == endprev);
-	//@ bool Case_B = (itemprev == end) && (pxItemToRemove != endprev);
-	//@ bool Case_C = (itemprev != end) && (pxItemToRemove == endprev);
-	//@ bool Case_D = (itemprev != end) && (pxItemToRemove != endprev);
-	
-	/*@ 	if (Case_A) {
-	
-		open DLS(pxItemToRemove, end, end, pxItemToRemove, cells_of_DLS2);
-		open ListItem_t(pxItemToRemove, _, end, end, _);
-		
-		open DLS(end, pxItemToRemove, pxItemToRemove, end, cells_of_DLS1);
-		open ListItem_t(end, _, pxItemToRemove, pxItemToRemove, _);
-				
-	}	else if (Case_B) {
-		
-		open DLS(pxItemToRemove, end, end, endprev, cells_of_DLS2);
-		open ListItem_t(pxItemToRemove, _, ?itemnext, end, _);
-		
+    } else
+    {
+        if (pxItemToRemove == endprev)
+        {
+            open DLS(pxItemToRemove, itemprev, end, pxItemToRemove, cells_of_DLS2, _);
+            open ListItem_t(pxItemToRemove, _, end, itemprev, _);
+            length_append(cells_of_DLS1, cells_of_DLS2);
+            DLS_extract_last_item(end, itemprev, cells_of_DLS1);
+            open ListItem_t(itemprev, _, pxItemToRemove, ?itemprevprev, _);
+            open DLS(end, pxItemToRemove, itemprev, itemprevprev, _, _);
+            open ListItem_t(end, _, ?endnext, pxItemToRemove, _);
 
-		open DLS(itemnext, pxItemToRemove, end, endprev, tail(cells_of_DLS2));
-		open ListItem_t(itemnext, _, _, pxItemToRemove, _); 
-		
-		open DLS(end, endprev, pxItemToRemove, end, cells_of_DLS1);
-		open ListItem_t(end, _, pxItemToRemove, endprev, _);
-		
-	}	
-		else if (Case_C) {
-		
-		open DLS(pxItemToRemove, itemprev, end, pxItemToRemove, cells_of_DLS2);
-		open ListItem_t(pxItemToRemove, _, end, itemprev, _);
-		
-		length_append(cells_of_DLS1, cells_of_DLS2);
-		
-		extract_last_item(end, itemprev, cells_of_DLS1);
-		open ListItem_t(itemprev, _, pxItemToRemove, ?itemprevprev, _);
-		
-		open DLS(end, pxItemToRemove, itemprev, itemprevprev, _);
-		open ListItem_t(end, _, ?endnext, pxItemToRemove, _);
-		
-	}
-		else if (Case_D) {
-		
-		open DLS(pxItemToRemove, itemprev, end, endprev, cells_of_DLS2);
-		open ListItem_t(pxItemToRemove, _, ?itemnext, itemprev, _);
-		
-		extract_last_item(end, itemprev, cells_of_DLS1);
-		open ListItem_t(itemprev, _, pxItemToRemove, ?itemprevprev, _);
-		
-		open DLS(itemnext, pxItemToRemove, end, endprev, tail(cells_of_DLS2));
-		open ListItem_t(itemnext, _, _, pxItemToRemove, _);
-
+        } else 
+        {
+            open DLS(pxItemToRemove, itemprev, end, endprev, cells_of_DLS2, _);
+            open ListItem_t(pxItemToRemove, _, ?itemnext, itemprev, _);
+            DLS_extract_last_item(end, itemprev, cells_of_DLS1);
+            open ListItem_t(itemprev, _, pxItemToRemove, ?itemprevprev, _);
+            open DLS(itemnext, pxItemToRemove, end, endprev, tail(cells_of_DLS2), _);
+            open ListItem_t(itemnext, _, _, pxItemToRemove, _);
+        }
     }
 
     @*/ 
-	
-    //@ assume(container == pxItemToRemove->pxContainer);
-	
-    List_t * pxList = pxItemToRemove->pxContainer; // Should have been List_t * const pxList
+    
+    
+#ifdef VERIFAST /*< const pointer declaration */    
+    List_t * pxList = pxItemToRemove->pxContainer;
+#else
+    List_t * const pxList = pxItemToRemove->pxContainer;
+#endif
 
     pxItemToRemove->pxNext->pxPrevious = pxItemToRemove->pxPrevious;
     pxItemToRemove->pxPrevious->pxNext = pxItemToRemove->pxNext;
@@ -119,87 +110,83 @@ UBaseType_t uxListRemove( ListItem_t * const pxItemToRemove )
     return pxList->uxNumberOfItems;
     
     /*@ 
-    if (Case_A)
-    {
-    	close ListItem_t(end, _, end, end, _);
-    	close DLS(end, end, end, end, cons(end, nil));
     
-    } else if (Case_B)
+    if (itemprev == end)
     {
-    	close ListItem_t(end, _, ?itemnext, endprev, _);
-    	close ListItem_t(itemnext, _, _, end, _);	
-    	close DLS(end, endprev, itemnext, end, cells_of_DLS1);
-    	close DLS(itemnext, end, end, endprev, tail(cells_of_DLS2));
-    	append_dls(end, endprev, itemnext, end, end, endprev, cells_of_DLS1, tail(cells_of_DLS2));
+        if (pxItemToRemove == endprev)
+        {
+            close ListItem_t(end, _, end, end, _);
+            close DLS(end, end, end, end, cons(end, nil), _);
     
-    } else if (Case_C) {
-    	
-    	close ListItem_t(end, _, _, itemprev, _);
-    	close ListItem_t(itemprev, _, end, ?itemprevprev, _);
-    	if (itemprevprev == end) 
-    	{
-    		
-    		close DLS(end, itemprev, itemprev, end, cons(end, nil));
-    		
-    	} else
-    	{
-		assert DLS(_, end, itemprev, itemprevprev, ?cells0);
-		close DLS(end, itemprev, itemprev, itemprevprev, cons(end, cells0));
-	}
-		
-	append_take_drop_n(cells_of_DLS1, length(cells_of_DLS1) - 1);
-			
-	close DLS(itemprev, itemprevprev, end, itemprev, cons(itemprev, nil));
-	append_dls(end, itemprev, itemprev, itemprevprev, end, itemprev, take(length(cells_of_DLS1) - 1, cells_of_DLS1), cons(itemprev, nil));
-		
-	mem_append(itemprev,take(length(cells_of_DLS1) - 1, cells_of_DLS1),cons(itemprev,nil));
-		
-	remove_item(pxItemToRemove, cells);
-	append_nil(cells_of_DLS1);
-		
-	} else if (Case_D)
-	{
-		
-		close ListItem_t(itemprev, _, ?itemnext, ?itemprevprev, _);
-		close ListItem_t(itemnext, _, _, itemprev, _);
-		
-		close DLS(itemnext, itemprev, end, endprev, tail(cells_of_DLS2));
-		
-		close DLS(itemprev, itemprevprev, itemnext, itemprev, cons(itemprev, nil));
+        } else
+        {
+            close ListItem_t(end, _, ?itemnext, endprev, _);
+            close ListItem_t(itemnext, _, _, end, _);    
+            close DLS(end, endprev, itemnext, end, cells_of_DLS1, _);
+            close DLS(itemnext, end, end, endprev, tail(cells_of_DLS2), _);
+            append_DLS(end, endprev, itemnext, end, end, endprev, cells_of_DLS1, tail(cells_of_DLS2));
+        }
 
-		append_dls(end, endprev, itemprev, itemprevprev, itemnext, itemprev, take(length(cells_of_DLS1) - 1, cells_of_DLS1), cons(itemprev, nil));
+    } else
+    {
+    
+        if (pxItemToRemove == endprev)
+        {
+            close ListItem_t(end, _, _, itemprev, _);
+            close ListItem_t(itemprev, _, end, ?itemprevprev, container);
 
-		append_take_drop_n(cells_of_DLS1, length(cells_of_DLS1) - 1);
-		
-		mem_append(itemprev,take(length(cells_of_DLS1) - 1, cells_of_DLS1),cons(itemprev, nil));
-		
-		mem_append(itemprev,cells_of_DLS1, tail(cells_of_DLS2));
-		
-		append_dls(end, endprev, itemnext, itemprev, end, endprev, cells_of_DLS1, tail(cells_of_DLS2));
-		
-		remove_item(pxItemToRemove, cells);
+            if (itemprevprev == end) 
+            {
+                close DLS(end, itemprev, itemprev, end, cons(end, nil), _);
 
-		open DLS(end, endprev, end, endprev, remove(pxItemToRemove, cells));
+            } else
+            {
+                assert DLS(_, end, itemprev, itemprevprev, ?cells0, _);
+                close DLS(end, itemprev, itemprev, itemprevprev, cons(end, cells0), _);
+            }
+   
+        append_take_drop_n(cells_of_DLS1, length(cells_of_DLS1) - 1);      
+        close DLS(itemprev, itemprevprev, end, itemprev, cons(itemprev, nil), container);
+        append_DLS(end, itemprev, itemprev, itemprevprev, end, itemprev, take(length(cells_of_DLS1) - 1, cells_of_DLS1), cons(itemprev, nil));   
+        mem_append(itemprev,take(length(cells_of_DLS1) - 1, cells_of_DLS1),cons(itemprev,nil));  
+        remove_item(pxItemToRemove, cells);
+        append_nil(cells_of_DLS1);
 
-		close DLS(end, endprev, end, endprev, remove(pxItemToRemove, cells));
+        } else
+        {
+        
+            close ListItem_t(itemprev, _, ?itemnext, ?itemprevprev, container);
+            close ListItem_t(itemnext, _, _, itemprev, _);
+            close DLS(itemnext, itemprev, end, endprev, tail(cells_of_DLS2), container);
+            close DLS(itemprev, itemprevprev, itemnext, itemprev, cons(itemprev, nil), container);
+            append_DLS(end, endprev, itemprev, itemprevprev, itemnext, itemprev, take(length(cells_of_DLS1) - 1, cells_of_DLS1), cons(itemprev, nil));
+            append_take_drop_n(cells_of_DLS1, length(cells_of_DLS1) - 1);
+            mem_append(itemprev,take(length(cells_of_DLS1) - 1, cells_of_DLS1),cons(itemprev, nil));
+            mem_append(itemprev,cells_of_DLS1, tail(cells_of_DLS2));
+            append_DLS(end, endprev, itemnext, itemprev, end, endprev, cells_of_DLS1, tail(cells_of_DLS2));
+            remove_item(pxItemToRemove, cells);
+            open DLS(end, endprev, end, endprev, remove(pxItemToRemove, cells), _);
+            close DLS(end, endprev, end, endprev, remove(pxItemToRemove, cells), _);
+        }
+    }
+    
+    @*/
+    
+    //@ length_remove(pxItemToRemove, cells);
+    
+    /*@ 
 
-	}
-	
-	@*/
-	
-	//@ length_remove(pxItemToRemove, cells);
-	
-	/*@ if (idx == pxItemToRemove) {
-	
-		close List_t(container, len-1, itemprev, end, remove(pxItemToRemove, cells));
-		
-	} else {
-	
-		idx_member(idx, pxItemToRemove, cells);
-		close List_t(container, len-1, idx, end, remove(pxItemToRemove, cells));
-	}
-	@*/
+    if (idx == pxItemToRemove)
+    {
+        close List_t(container, len-1, itemprev, end, remove(pxItemToRemove, cells));
+        
+    } else
+    {
+        remove_member(idx, pxItemToRemove, cells);
+        close List_t(container, len-1, idx, end, remove(pxItemToRemove, cells));
+    }
+    
+    @*/
 
-	//@ close ListItem_t(pxItemToRemove, _, _, _, NULL);
+    //@ close ListItem_t(pxItemToRemove, _, _, _, NULL);
 }
-/*-----------------------------------------------------------*/

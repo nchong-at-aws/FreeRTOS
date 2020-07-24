@@ -37,6 +37,16 @@ queue:
 	@$(VERIFAST) $(VERIFAST_ARGS)                         queue/xQueueReceive.c             | $(call check_coverage,330)
 	@$(VERIFAST) $(VERIFAST_ARGS) -disable_overflow_check queue/xQueueReceiveFromISR.c      | $(call check_coverage,307)
 
+all: list
+
+.PHONY: list
+list:
+	@$(VERIFAST) $(VERIFAST_ARGS)                         list/uxListRemove.c               | $(call check_coverage,229)
+	@$(VERIFAST) $(VERIFAST_ARGS)                         list/vListInitialise.c            | $(call check_coverage,157)
+	@$(VERIFAST) $(VERIFAST_ARGS)                         list/vListInitialiseItem.c        | $(call check_coverage,149)
+	@$(VERIFAST) $(VERIFAST_ARGS) -disable_overflow_check list/vListInsertEnd.c             | $(call check_coverage,223)
+	@$(VERIFAST) $(VERIFAST_ARGS) -disable_overflow_check list/vListInsert.c                | $(call check_coverage,258)
+
 .PHONY: proof_changes
 proof_changes:
 	@git grep "if[n]*def VERIFAST" | cut  -f 3- -d ' ' | sort | uniq

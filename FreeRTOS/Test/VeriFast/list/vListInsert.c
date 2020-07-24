@@ -24,8 +24,8 @@
 
 #ifdef VERIFAST /* choose function */
 ListItem_t * choose(List_t * list);
-    //@ requires DLS(&(list->xListEnd), ?endprev, &(list->xListEnd), endprev, ?cells);
-    //@ ensures DLS(&(list->xListEnd), endprev, &(list->xListEnd), endprev, cells) &*& mem(result, cells) == true;
+    //@ requires DLS(&(list->xListEnd), ?endprev, &(list->xListEnd), endprev, ?cells, ?container);
+    //@ ensures DLS(&(list->xListEnd), endprev, &(list->xListEnd), endprev, cells, container) &*& mem(result, cells) == true;
 #endif
 
 void vListInsert( List_t * const pxList,
@@ -40,7 +40,7 @@ void vListInsert( List_t * const pxList,
     const TickType_t xValueOfInsertion = pxNewListItem->xItemValue;
 
     //@ open List_t(pxList, len, idx, end, cells);
-    //@ assert DLS(end, ?endprev, end, endprev, cells);
+    //@ assert DLS(end, ?endprev, end, endprev, cells, _);
     //@ index_of_last_in_DLS(end, endprev, cells);
 
     listTEST_LIST_INTEGRITY( pxList );
@@ -48,7 +48,7 @@ void vListInsert( List_t * const pxList,
 
     if( xValueOfInsertion == portMAX_DELAY )
     {
-        //@ open DLS(end, endprev, end, endprev, cells);
+        //@ open DLS(end, endprev, end, endprev, cells, _);
     
         /*@
        
@@ -63,7 +63,7 @@ void vListInsert( List_t * const pxList,
             
             if (endnext == endprev)
             {
-                open DLS(endprev, _, _, endprev, _);
+                open DLS(endprev, _, _, endprev, _, _);
                 
             } else 
             {
@@ -87,19 +87,17 @@ void vListInsert( List_t * const pxList,
         {
         }
 #endif
-
-        //@ assert mem(pxIterator, cells) == true;
         
         /*@
         
         if(pxIterator == end)
         {
-            open DLS(end, endprev, end, endprev, cells);
+            open DLS(end, endprev, end, endprev, cells, _);
             open ListItem_t(end, _, ?endnext, endprev, _);
             
             if (end != endprev)
             {
-                open DLS(endnext, end, end, endprev, tail(cells));
+                open DLS(endnext, end, end, endprev, tail(cells), _);
                 open ListItem_t(endnext, _, _, end, _); 
             }
 
@@ -107,19 +105,19 @@ void vListInsert( List_t * const pxList,
         {
 
             split_DLS(end, endprev, end, endprev, pxIterator, cells);
-            assert DLS(end, endprev, pxIterator, ?iterprev, ?cells1);
-            assert DLS(pxIterator, iterprev, end, endprev, ?cells2);
-            open DLS(pxIterator, iterprev, end, endprev, cells2);
+            assert DLS(end, endprev, pxIterator, ?iterprev, ?cells1, _);
+            assert DLS(pxIterator, iterprev, end, endprev, ?cells2, _);
+            open DLS(pxIterator, iterprev, end, endprev, cells2, _);
             open ListItem_t(pxIterator, _, ?iternext, iterprev, _);
             
             if (pxIterator == endprev)
             {
-                open DLS(end, endprev, pxIterator, iterprev, cells1);
+                open DLS(end, endprev, pxIterator, iterprev, cells1, _);
                 open ListItem_t(iternext, _, _, pxIterator, _); 
                 
             } else
             {
-                open DLS(iternext, pxIterator, end, endprev, tail(cells2));
+                open DLS(iternext, pxIterator, end, endprev, tail(cells2), _);
                 open ListItem_t(iternext, _, _, pxIterator, _);
             }
         }
@@ -146,27 +144,27 @@ void vListInsert( List_t * const pxList,
     
         if (end == endprev)
         {
-           close DLS(pxNewListItem, end, end, pxNewListItem, cons(pxNewListItem, nil));
-           close DLS(end, pxNewListItem, end, pxNewListItem, cons(end, cons(pxNewListItem,nil)));
+           close DLS(pxNewListItem, end, end, pxNewListItem, cons(pxNewListItem, nil), _);
+           close DLS(end, pxNewListItem, end, pxNewListItem, cons(end, cons(pxNewListItem,nil)), _);
            close List_t(pxList, len+1, idx, end, cons(end, cons(pxNewListItem, nil)));
            
         } else
         {
          
            close ListItem_t(end, _, ?endnext, pxNewListItem, _);
-           close DLS(pxNewListItem, endprev, end, pxNewListItem, cons(pxNewListItem, nil));
-           close DLS(endprev, iterprev, end, pxNewListItem, cons(endprev, cons(pxNewListItem, nil)));
+           close DLS(pxNewListItem, endprev, end, pxNewListItem, cons(pxNewListItem, nil), _);
+           close DLS(endprev, iterprev, end, pxNewListItem, cons(endprev, cons(pxNewListItem, nil)), _);
            
            if (endnext == endprev)
            {
-               close DLS(iterprev, pxNewListItem, end, pxNewListItem, cons(iterprev, cons(endprev, cons(pxNewListItem, nil))));
+               close DLS(iterprev, pxNewListItem, end, pxNewListItem, cons(iterprev, cons(endprev, cons(pxNewListItem, nil))), _);
                close List_t(pxList, len+1, idx, end, cons(iterprev, cons(endprev, cons(pxNewListItem, nil))));
 
            } else
            {
-               assert DLS(endnext, end, endprev, iterprev, ?cells0);
+               assert DLS(endnext, end, endprev, iterprev, ?cells0, _);
                append_DLS(endnext, end, endprev, iterprev, end, pxNewListItem, cells0, cons(endprev, cons(pxNewListItem, nil)));
-               close DLS(end, pxNewListItem, end, pxNewListItem, cons(end, append(cells0, cons(endprev, cons(pxNewListItem, nil)))));
+               close DLS(end, pxNewListItem, end, pxNewListItem, cons(end, append(cells0, cons(endprev, cons(pxNewListItem, nil)))), _);
                append_take_drop_n(cells, length(cells) - 1);
                append_assoc(cons(end, cells0), cons(endprev, nil), cons(pxNewListItem, nil));
                remove_append(pxNewListItem, cells, cons(pxNewListItem, nil));
@@ -182,8 +180,8 @@ void vListInsert( List_t * const pxList,
         
             if (iternext == end)
             {
-                close DLS(pxNewListItem, pxIterator, end, pxNewListItem, cons(pxNewListItem,nil));
-                close DLS(end, pxNewListItem, end, pxNewListItem, cons(end,cons(pxNewListItem,nil)));
+                close DLS(pxNewListItem, pxIterator, end, pxNewListItem, cons(pxNewListItem,nil), _);
+                close DLS(end, pxNewListItem, end, pxNewListItem, cons(end,cons(pxNewListItem,nil)), _);
                 close List_t(pxList, len+1, idx, end, cons(end, cons(pxNewListItem, nil)));
         
             } else
@@ -192,22 +190,22 @@ void vListInsert( List_t * const pxList,
             
                 if (iternext == endprev)
                 {
-                    close DLS(iternext, pxNewListItem, end, endprev, cons(iternext, nil));
+                    close DLS(iternext, pxNewListItem, end, endprev, cons(iternext, nil), _);
                     last_element_in_DLS(iternext, endprev, cons(iternext, nil));
                 
                 } else
                 {
-                    assert DLS(_, iternext, end, endprev, ?cells2);
-                    close DLS(iternext, pxNewListItem, end, endprev, cons(iternext,cells2));
+                    assert DLS(_, iternext, end, endprev, ?cells2, _);
+                    close DLS(iternext, pxNewListItem, end, endprev, cons(iternext,cells2), _);
                     last_element_in_DLS(iternext, endprev, cons(iternext, cells2));
                 
                 }
             
-                assert DLS(iternext, pxNewListItem, end, endprev, ?cells2);
+                assert DLS(iternext, pxNewListItem, end, endprev, ?cells2, _);
                 DLS_star_item(iternext, endprev, pxNewListItem);
                 
-                close DLS(pxNewListItem, pxIterator, end, endprev, cons(pxNewListItem, cells2));
-                close DLS(end, endprev, end, endprev, cons(end, cons(pxNewListItem, cells2)));
+                close DLS(pxNewListItem, pxIterator, end, endprev, cons(pxNewListItem, cells2), _);
+                close DLS(end, endprev, end, endprev, cons(end, cons(pxNewListItem, cells2)), _);
                 close List_t(pxList, len+1, idx, end, cons(end, cons(pxNewListItem, cells2)));
             
             }
@@ -222,21 +220,18 @@ void vListInsert( List_t * const pxList,
             
                 if (iterprev == end)
                 {
-                    close DLS(end, pxNewListItem, pxIterator, end, cons(end, nil));
+                    close DLS(end, pxNewListItem, pxIterator, end, cons(end, nil), _);
                 
                 } else
                 {
-                    assert DLS(_, iternext, pxIterator, iterprev, ?cells1);
-                    close DLS(end, pxNewListItem, pxIterator, iterprev, cons(end, cells1));
-                    assert (cons(end, cells1) == take(index_of(pxIterator, cells), cells));
+                    assert DLS(_, iternext, pxIterator, iterprev, ?cells1, _);
+                    close DLS(end, pxNewListItem, pxIterator, iterprev, cons(end, cells1), _);
                 }
             
-                assert DLS(end, pxNewListItem, pxIterator, iterprev, ?cells1);
-                close DLS(pxNewListItem, pxIterator, iternext, pxNewListItem, cons(pxNewListItem, nil));
-                close DLS(pxIterator, iterprev, iternext, pxNewListItem, cons(pxIterator, cons(pxNewListItem, nil)));
+                assert DLS(end, pxNewListItem, pxIterator, iterprev, ?cells1, _);
+                close DLS(pxNewListItem, pxIterator, iternext, pxNewListItem, cons(pxNewListItem, nil), _);
+                close DLS(pxIterator, iterprev, iternext, pxNewListItem, cons(pxIterator, cons(pxNewListItem, nil)), _);
                 append_DLS(end, pxNewListItem, pxIterator, iterprev, iternext, pxNewListItem, cells1, cons(pxIterator,cons(pxNewListItem,nil)));
-                assert (index_of(endprev, cells) == length(cells) - 1);
-                assert (drop(index_of(pxIterator, cells) + 1, cells) == nil);
                 drop_n_plus_one(index_of(pxIterator, cells), cells);
                 index_of_nth(pxIterator, cells);
                 append_take_drop_n(cells, index_of(pxIterator, cells));
@@ -249,22 +244,22 @@ void vListInsert( List_t * const pxList,
             
                 if (iternext == endprev)
                 {
-                    close DLS(iternext, pxNewListItem, end, endprev, cons(iternext, nil));
+                    close DLS(iternext, pxNewListItem, end, endprev, cons(iternext, nil), _);
                 
                 } else
                 {
-                    assert DLS(_, iternext, end, endprev, ?cells2);
-                    close DLS(iternext, pxNewListItem, end, endprev, cons(iternext, cells2));
+                    assert DLS(_, iternext, end, endprev, ?cells2, _);
+                    close DLS(iternext, pxNewListItem, end, endprev, cons(iternext, cells2), _);
                 } 
             
-                assert DLS(end, endprev, pxIterator, iterprev, ?cells1);
+                assert DLS(end, endprev, pxIterator, iterprev, ?cells1, _);
                 DLS_length_positive(end, iterprev);
                 head_take(pxIterator, cells);
-                assert DLS(iternext, pxNewListItem, end, endprev, ?cells2);
+                assert DLS(iternext, pxNewListItem, end, endprev, ?cells2, _);
                 last_element_in_DLS(iternext, endprev, cells2);
                 DLS_star_item(iternext, endprev, pxNewListItem);
-                close DLS(pxNewListItem, pxIterator, end, endprev, cons(pxNewListItem, cells2));
-                close DLS(pxIterator, iterprev, end, endprev, cons(pxIterator, cons(pxNewListItem, cells2)));  
+                close DLS(pxNewListItem, pxIterator, end, endprev, cons(pxNewListItem, cells2), _);
+                close DLS(pxIterator, iterprev, end, endprev, cons(pxIterator, cons(pxNewListItem, cells2)), _);  
                 append_DLS(end, endprev, pxIterator, iterprev, end, endprev, cells1, cons(pxIterator, cons(pxNewListItem, cells2)));
                 head_append(cells1, cons(pxIterator, cons(pxNewListItem, cells2)));   
                 drop_n_plus_one(index_of(pxIterator, cells), cells);
