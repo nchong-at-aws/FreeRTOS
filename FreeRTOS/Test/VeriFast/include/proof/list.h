@@ -52,8 +52,8 @@ typedef int BaseType_t;
 struct xLIST;
 struct xLIST_ITEM
 {
-listFIRST_LIST_ITEM_INTEGRITY_CHECK_VALUE
-    int xItemValue;
+    listFIRST_LIST_ITEM_INTEGRITY_CHECK_VALUE
+    configLIST_VOLATILE TickType_t xItemValue;
     struct xLIST_ITEM * configLIST_VOLATILE pxNext;
     struct xLIST_ITEM * configLIST_VOLATILE pxPrevious;
     void * pvOwner;
@@ -62,22 +62,26 @@ listFIRST_LIST_ITEM_INTEGRITY_CHECK_VALUE
 };
 typedef struct xLIST_ITEM ListItem_t;
 
-  struct xMINI_LIST_ITEM
-  {
+struct xMINI_LIST_ITEM
+{
     listFIRST_LIST_ITEM_INTEGRITY_CHECK_VALUE
     configLIST_VOLATILE TickType_t xItemValue;
     struct xLIST_ITEM * configLIST_VOLATILE pxNext;
     struct xLIST_ITEM * configLIST_VOLATILE pxPrevious;
-  };
-  typedef struct xMINI_LIST_ITEM MiniListItem_t;
+};
+typedef struct xMINI_LIST_ITEM MiniListItem_t;
 
 typedef struct xLIST
 {
     listFIRST_LIST_INTEGRITY_CHECK_VALUE 
     volatile UBaseType_t uxNumberOfItems;
     ListItem_t * configLIST_VOLATILE pxIndex;
-    ListItem_t xListEnd;
-    listSECOND_LIST_INTEGRITY_CHECK_VALUE
+#ifdef VERIFAST
+        ListItem_t xListEnd;
+#else
+        MiniListItem_t xListEnd;
+#endif
+        listSECOND_LIST_INTEGRITY_CHECK_VALUE
 } List_t;
 
 #define listSET_LIST_ITEM_OWNER( pxListItem, pxOwner )    ( ( pxListItem )->pvOwner = ( void * ) ( pxOwner ) )
@@ -154,27 +158,15 @@ predicate List_t_uninitialised(List_t *list) =
 
 
 void vListInitialise( List_t * const pxList ) PRIVILEGED_FUNCTION;
-    //@ requires List_t_uninitialised(pxList); 
-    //@ ensures List_t(pxList, 0, ?end, end, cons(end,nil));
 
-    void vListInitialiseItem( ListItem_t * const pxItem ) PRIVILEGED_FUNCTION;
-    //@ requires ListItem_t(pxItem, ?value, ?next, ?prev, _);
-    //@ ensures ListItem_t(pxItem, value, next, prev, NULL);
+void vListInitialiseItem( ListItem_t * const pxItem ) PRIVILEGED_FUNCTION;
 
-    void vListInsert( List_t * const pxList,
-                      ListItem_t * const pxNewListItem ) PRIVILEGED_FUNCTION;
-    //@ requires List_t(pxList, ?len, ?idx, ?end, ?cells) &*& ListItem_t(pxNewListItem, ?val, _, _, _) &*& (mem(pxNewListItem, cells) == false);
-    //@ ensures List_t(pxList, len+1, idx, end, _);
+void vListInsert( List_t * const pxList, ListItem_t * const pxNewListItem ) PRIVILEGED_FUNCTION;
 
-    void vListInsertEnd( List_t * const pxList,
-                         ListItem_t * const pxNewListItem ) PRIVILEGED_FUNCTION;
-    //@ requires List_t(pxList, ?len, ?idx, ?end, ?cells) &*& ListItem_t(pxNewListItem, ?val, _, _, _) &*& (mem(pxNewListItem, cells) == false);
-    //@ ensures List_t(pxList, len+1, idx, end, _);
+void vListInsertEnd( List_t * const pxList, ListItem_t * const pxNewListItem ) PRIVILEGED_FUNCTION;
 
-    UBaseType_t uxListRemove( ListItem_t * const pxItemToRemove ) PRIVILEGED_FUNCTION;
-    //@ requires exists<struct xLIST *>(?container) &*& List_t(container, ?len, ?idx, ?end, ?cells) &*& (mem(pxItemToRemove, cells) == true) &*& (pxItemToRemove != end);
-    //@ ensures List_t(container, len-1, _, end, remove(pxItemToRemove, cells)) &*& ListItem_t(pxItemToRemove, _, _, _, NULL);
-    
+UBaseType_t uxListRemove( ListItem_t * const pxItemToRemove ) PRIVILEGED_FUNCTION;
+
 /*@
     
 lemma void DLS_length_positive(
