@@ -31,8 +31,6 @@ typedef int TickType_t;
 typedef int UBaseType_t;
 typedef int BaseType_t;
 
-// Macros:
-
 #define listFIRST_LIST_ITEM_INTEGRITY_CHECK_VALUE
 #define listSECOND_LIST_ITEM_INTEGRITY_CHECK_VALUE
 #define listFIRST_LIST_INTEGRITY_CHECK_VALUE
@@ -112,11 +110,11 @@ typedef struct xLIST
 /*@
 
 predicate ListItem_t(
-  struct xLIST_ITEM *n,
-  unsigned char val,
-  struct xLIST_ITEM *next,
-  struct xLIST_ITEM *prev,
-  struct xLIST *container) =
+  ListItem_t *n,
+  TickType_t val,
+  ListItem_t *next,
+  ListItem_t *prev,
+  List_t *container) =
   n->xItemValue |-> val &*&
   n->pxNext |-> next &*&
   n->pxPrevious |-> prev &*&

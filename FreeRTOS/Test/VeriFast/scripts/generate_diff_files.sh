@@ -40,6 +40,7 @@ mkdir generated
 for f in ${QUEUE_FUNCS[@]}; do
   ../extract.py tags $f > generated/$f.c
 done
+ctags --excmd=number list.c
 for f in ${LIST_FUNCS[@]}; do
   ../extract.py tags $f > generated/$f.c
 done
