@@ -14,7 +14,7 @@ check_coverage = perl -pe \
    $$status=/$1 statements verified/ ? 0 : 1;'
 endif
 
-all: queue
+all: queue list
 
 .PHONY: queue
 queue:
@@ -36,8 +36,6 @@ queue:
 	@$(VERIFAST) $(VERIFAST_ARGS)                         queue/xQueuePeekFromISR.c         | $(call check_coverage,293)
 	@$(VERIFAST) $(VERIFAST_ARGS)                         queue/xQueueReceive.c             | $(call check_coverage,330)
 	@$(VERIFAST) $(VERIFAST_ARGS) -disable_overflow_check queue/xQueueReceiveFromISR.c      | $(call check_coverage,307)
-
-all: list
 
 .PHONY: list
 list:
