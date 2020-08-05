@@ -61,14 +61,16 @@ void vListInsertEnd( List_t * const pxList,
     	        open DLS(endnext, end, end, endprev, tail(cells), _);
     	        open ListItem_t(endprev, _, end, end, _);
     	        
-    	    } else
+    	    } 
+            else
     	    {
     	        DLS_extract_last_item(endnext, endprev, tail(cells));
     	        open ListItem_t(endprev, _, end, _, _);
     	    }
     	}
     	
-    } else
+    } 
+    else
     {
     	split_DLS(end, endprev, end, endprev, idx, cells);
     	assert DLS(end, endprev, idx, ?idxprev, ?cells1, _);
@@ -83,7 +85,8 @@ void vListInsertEnd( List_t * const pxList,
     	{
     	    open DLS(end, endprev, idx, idxprev, cells1, _);
     	    
-    	} else
+    	} 
+        else
     	{
     	    DLS_extract_last_item(end, idxprev, cells1);
 	}
@@ -130,7 +133,8 @@ void vListInsertEnd( List_t * const pxList,
     	    {
     	        close DLS(endnext, end, end, pxNewListItem, cons(endprev, cons(pxNewListItem, nil)), _);
     	        
-    	    } else
+    	    } 
+            else
     	    {
     	    	close DLS(endprev, ?endprevprev, end, pxNewListItem, cons(endprev, cons(pxNewListItem, nil)), _);
     	    	assert DLS(endnext, end, endprev, endprevprev, ?cells0, _);
@@ -144,13 +148,15 @@ void vListInsertEnd( List_t * const pxList,
     	    close List_t(pxList, len+1, idx, end, cons(end,cells0));
     	    remove_append(pxNewListItem, tail(cells), cons(pxNewListItem,nil));
     	    
-    	} else
+    	} 
+        else
     	{
     	    close DLS(end, pxNewListItem, end, pxNewListItem, cons(end, cons(pxNewListItem,nil)), _);
     	    close List_t(pxList, len+1, idx, end, cons(end, cons(pxNewListItem,nil)));
     	}
     	
-    } else
+    } 
+    else
     {
     	close ListItem_t(idx, _, _, pxNewListItem, _);
     	close ListItem_t(idxprev, _, pxNewListItem, _, _);
@@ -159,7 +165,8 @@ void vListInsertEnd( List_t * const pxList,
         {
             close DLS(end, endprev, pxNewListItem, idxprev, cons(end, nil), _);
             
-        } else
+        } 
+        else
         {
             assert DLS(end, endprev, idxprev, ?idxprevprev, ?cells0, _);
             close DLS(idxprev, idxprevprev, pxNewListItem, idxprev, cons(idxprev, nil), _);
@@ -172,7 +179,8 @@ void vListInsertEnd( List_t * const pxList,
         {
              close DLS(idx, pxNewListItem, end, endprev, cons(endprev, nil), _);
              
-        } else
+        } 
+        else
         {
              assert DLS(_, idx, end, endprev, ?cells0, _);
              close DLS(idx, pxNewListItem, end, endprev, cons(idx,cells0), _);

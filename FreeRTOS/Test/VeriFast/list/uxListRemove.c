@@ -47,7 +47,8 @@ UBaseType_t uxListRemove( ListItem_t * const pxItemToRemove )
             open DLS(end, pxItemToRemove, pxItemToRemove, end, cells_of_DLS1, _);
             open ListItem_t(end, _, pxItemToRemove, pxItemToRemove, _);
                 
-        } else
+        } 
+        else
         {
         
             open DLS(pxItemToRemove, end, end, endprev, cells_of_DLS2, _);
@@ -58,7 +59,8 @@ UBaseType_t uxListRemove( ListItem_t * const pxItemToRemove )
             open ListItem_t(end, _, pxItemToRemove, endprev, _);
         } 
 
-    } else
+    } 
+    else
     {
         if (pxItemToRemove == endprev)
         {
@@ -70,7 +72,8 @@ UBaseType_t uxListRemove( ListItem_t * const pxItemToRemove )
             open DLS(end, pxItemToRemove, itemprev, itemprevprev, _, _);
             open ListItem_t(end, _, ?endnext, pxItemToRemove, _);
 
-        } else 
+        } 
+        else 
         {
             open DLS(pxItemToRemove, itemprev, end, endprev, cells_of_DLS2, _);
             open ListItem_t(pxItemToRemove, _, ?itemnext, itemprev, _);
@@ -121,7 +124,8 @@ UBaseType_t uxListRemove( ListItem_t * const pxItemToRemove )
             close ListItem_t(end, _, end, end, _);
             close DLS(end, end, end, end, cons(end, nil), _);
     
-        } else
+        } 
+        else
         {
             close ListItem_t(end, _, ?itemnext, endprev, _);
             close ListItem_t(itemnext, _, _, end, _);    
@@ -130,7 +134,8 @@ UBaseType_t uxListRemove( ListItem_t * const pxItemToRemove )
             append_DLS(end, endprev, itemnext, end, end, endprev, cells_of_DLS1, tail(cells_of_DLS2));
         }
 
-    } else
+    } 
+    else
     {
     
         if (pxItemToRemove == endprev)
@@ -142,7 +147,8 @@ UBaseType_t uxListRemove( ListItem_t * const pxItemToRemove )
             {
                 close DLS(end, itemprev, itemprev, end, cons(end, nil), _);
 
-            } else
+            } 
+            else
             {
                 assert DLS(_, end, itemprev, itemprevprev, ?cells0, _);
                 close DLS(end, itemprev, itemprev, itemprevprev, cons(end, cells0), _);
@@ -155,7 +161,8 @@ UBaseType_t uxListRemove( ListItem_t * const pxItemToRemove )
         remove_item(pxItemToRemove, cells);
         append_nil(cells_of_DLS1);
 
-        } else
+        } 
+        else
         {
         
             close ListItem_t(itemprev, _, ?itemnext, ?itemprevprev, container);
@@ -183,7 +190,8 @@ UBaseType_t uxListRemove( ListItem_t * const pxItemToRemove )
     {
         close List_t(container, len-1, itemprev, end, remove(pxItemToRemove, cells));
         
-    } else
+    } 
+    else
     {
         remove_member(idx, pxItemToRemove, cells);
         close List_t(container, len-1, idx, end, remove(pxItemToRemove, cells));

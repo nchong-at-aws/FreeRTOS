@@ -125,7 +125,7 @@ predicate DLS(
   ListItem_t *nprev,
   ListItem_t *mnext,
   ListItem_t *m,
-  list<struct xLIST_ITEM *> cells,
+  list<ListItem_t *> cells,
   List_t *container) =
   n == m ? cells == cons(n, nil) &*&
            ListItem_t(n, _, mnext, nprev, container)
