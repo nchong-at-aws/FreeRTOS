@@ -14,7 +14,7 @@ check_coverage = perl -pe \
    $$status=/$1 statements verified/ ? 0 : 1;'
 endif
 
-all: queue
+all: queue list
 
 .PHONY: queue
 queue:
@@ -36,6 +36,14 @@ queue:
 	@$(VERIFAST) $(VERIFAST_ARGS)                         queue/xQueuePeekFromISR.c         | $(call check_coverage,293)
 	@$(VERIFAST) $(VERIFAST_ARGS)                         queue/xQueueReceive.c             | $(call check_coverage,330)
 	@$(VERIFAST) $(VERIFAST_ARGS) -disable_overflow_check queue/xQueueReceiveFromISR.c      | $(call check_coverage,307)
+
+.PHONY: list
+list:
+	@$(VERIFAST) $(VERIFAST_ARGS)                         list/uxListRemove.c               | $(call check_coverage,229)
+	@$(VERIFAST) $(VERIFAST_ARGS)                         list/vListInitialise.c            | $(call check_coverage,157)
+	@$(VERIFAST) $(VERIFAST_ARGS)                         list/vListInitialiseItem.c        | $(call check_coverage,149)
+	@$(VERIFAST) $(VERIFAST_ARGS) -disable_overflow_check list/vListInsertEnd.c             | $(call check_coverage,223)
+	@$(VERIFAST) $(VERIFAST_ARGS) -disable_overflow_check list/vListInsert.c                | $(call check_coverage,259)
 
 .PHONY: proof_changes
 proof_changes:
