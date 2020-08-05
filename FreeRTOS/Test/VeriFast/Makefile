@@ -43,7 +43,7 @@ list:
 	@$(VERIFAST) $(VERIFAST_ARGS)                         list/vListInitialise.c            | $(call check_coverage,157)
 	@$(VERIFAST) $(VERIFAST_ARGS)                         list/vListInitialiseItem.c        | $(call check_coverage,149)
 	@$(VERIFAST) $(VERIFAST_ARGS) -disable_overflow_check list/vListInsertEnd.c             | $(call check_coverage,223)
-	@$(VERIFAST) $(VERIFAST_ARGS) -disable_overflow_check list/vListInsert.c                | $(call check_coverage,258)
+	@$(VERIFAST) $(VERIFAST_ARGS) -disable_overflow_check list/vListInsert.c                | $(call check_coverage,259)
 
 .PHONY: proof_changes
 proof_changes:
