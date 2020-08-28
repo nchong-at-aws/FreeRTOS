@@ -71,9 +71,9 @@ A side-by-side diff with respect to the source code can be generated. See
 The main queue changes are:
 
   - merge cTxLock and cRxLock critical regions: under approximate queue
-	unlock behavior to atomically set `cTxLock` and `cRxLock` to unlocked in a
+    unlock behavior to atomically set `cTxLock` and `cRxLock` to unlocked in a
     single critical region instead of two separate critical regions. In
-	practice, this is not an issue since no ISR function reads-from both
+    practice, this is not an issue since no ISR function reads-from both
     cTxLock and cRxLock.
   - model single malloc of struct and buffer: split the single malloc of the
     queue struct and storage into two separate mallocs.
